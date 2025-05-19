@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Compras com Opção de Salvar e Editar Preços</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007bff">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Minha Lista de Compras</h1>
+        </header>
+        <section class="add-item">
+            <input type="text" id="newItem" placeholder="Adicionar item...">
+            <button id="addItemBtn">Adicionar</button>
+        </section>
+        <section class="shopping-list">
+            <ul id="itemList"></ul>
+        </section>
+        <section class="total" style="display: none;">
+            <h3>Total: R$ <span id="totalPrice">0.00</span></h3>
+        </section>
+        <section class="actions">
+            <button id="saveListBtn">Salvar Lista</button>
+            <button id="addPricesBtn" style="display: none;">Inserir Preços</button>
+            <button id="viewHistoryBtn">Ver Histórico</button>
+        </section>
+        <section class="history" style="display: none;">
+            <h2>Histórico de Listas</h2>
+            <ul id="historyList"></ul>
+        </section>
+        <footer>
+            <section class="messages">
+                <div id="message" style="display: none;"></div>
+            </section>
+            <p>&copy; 2025 Lista de Compras Moderna</p>
+        </footer>
+    </div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registrado:', registration);
+                    })
+                    .catch((error) => {
+                        console.error('Falha ao registrar Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
