@@ -1,68 +1,45 @@
-const CACHE_NAME = 'lista-compras-cache-v2'; // Alterado o nome do cache
-const urlsToCache = [
-    './',
-    './index.html',
-    './style.css',
-    './script.js',
-    './icon-192.png',
-    './icon-512.png'
+const CACHE_NAME = 'lista-compras-cache-v4';
+const OFFLINE_PAGE = './fallback.html';
+const ASSETS = [
+  './',
+  './index.html',
+  './style.css',
+  './script.js',
+  './lib/chart.min.js',
+  './icon-192.png',
+  './fallback.html'
 ];
 
 self.addEventListener('install', (event) => {
-  // Perform install steps
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response;
+    fetch(event.request)
+      .then(response => {
+        if (response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
-
-        // Not in cache - fetch from the network
-        return fetch(event.request).then(
-          (response) => {
-            // Check if we received a valid response
-            if(!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // IMPORTANT: Clone the response. This is necessary because the response body can only be read once.
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          }
-        );
+        return response;
       })
-    );
+      .catch(() => caches.match(event.request) || caches.match(OFFLINE_PAGE))
+  );
 });
 
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-          return null;
-        })
-      );
-    })
+    caches.keys().then(keys => 
+      Promise.all(
+        keys.map(key => key !== CACHE_NAME && caches.delete(key))
+      )
+    )
   );
 });

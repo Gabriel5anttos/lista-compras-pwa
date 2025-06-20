@@ -1,57 +1,146 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Compras com Opção de Salvar e Editar Preços</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#007bff">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Lista de compras PWA com gráficos e histórico">
+  <title>Listou! - Lista de Compras</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#007bff" />
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Minha Lista de Compras</h1>
-        </header>
-        <section class="add-item">
-            <input type="text" id="newItem" placeholder="Adicionar item...">
-            <button id="addItemBtn">Adicionar</button>
+  <div class="container">
+    <header class="app-header">
+      <h1>Listou!</h1>
+      <p class="slogan">Listou — Organizou — Comprou</p>
+      <button id="settingsBtn" class="settings-btn">⚙️</button>
+    </header>
+    <div class="main-box">
+
+    <nav class="tab-nav">
+      <button class="tab-button active" data-tab="compras">Compras</button>
+      <button class="tab-button" data-tab="graficos">Gráficos</button>
+    </nav>
+
+    <main>
+      <!-- Aba COMPRAS -->
+      <section id="compras" class="tab-content active">
+        <div class="add-item">
+          <input type="text" id="newItem" placeholder="Adicionar item..." />
+          <button id="addItemBtn">Adicionar</button>
+        </div>
+
+        <ul id="itemList" class="shopping-list"></ul>
+
+        <section class="total" id="totalSection" style="display: none;">
+          <h3>Total: R$ <span id="totalPrice">0.00</span></h3>
         </section>
-        <section class="shopping-list">
-            <ul id="itemList"></ul>
+
+        <div class="actions">
+          <button id="saveListBtn">Salvar Lista</button> 
+          <button id="viewHistoryBtn">Ver Histórico</button>
+          <button id="newListBtn">🆕 Nova Lista</button>
+          <button id="downloadListBtn">⬇️ Baixar Lista</button>
+        </div>
+
+        <section class="history" id="historySection" style="display: none;">
+          <h2>Histórico de Listas</h2>
+          <ul id="historyList"></ul>
         </section>
-        <section class="total" style="display: none;">
-            <h3>Total: R$ <span id="totalPrice">0.00</span></h3>
-        </section>
-        <section class="actions">
-            <button id="saveListBtn">Salvar Lista</button>
-            <button id="addPricesBtn" style="display: none;">Inserir Preços</button>
-            <button id="viewHistoryBtn">Ver Histórico</button>
-        </section>
-        <section class="history" style="display: none;">
-            <h2>Histórico de Listas</h2>
-            <ul id="historyList"></ul>
-        </section>
-        <footer>
-            <section class="messages">
-                <div id="message" style="display: none;"></div>
-            </section>
-            <p>&copy; 2025 Lista de Compras Moderna</p>
-        </footer>
+      </section>
+
+      <!-- Aba GRÁFICOS -->
+      <section id="graficos" class="tab-content">
+        <h2>Gráficos Financeiros</h2>
+        <div class="grafico-buttons">
+          <button id="graficoMensalBtn">Financeiro Mensal</button>
+          <button id="graficoSemanalBtn">Financeiro Semanal</button>
+        </div>
+        <canvas id="graficoCanvas" width="400" height="200"></canvas>
+        <button id="downloadGraphBtn">⬇️ Baixar Gráfico</button>
+      </section>
+    </main>
+
+    <!-- Modal de Configurações -->
+    <div id="configModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h2>Configurações</h2>
+        <ul>
+          <li><button id="clearHistoryBtn">🗑️ Excluir Histórico</button></li>
+          <li>
+            <div class="color-palette">
+              <span class="color-option" data-color="#007bff" style="background:#007bff"></span>
+              <span class="color-option" data-color="#28a745" style="background:#28a745"></span>
+              <span class="color-option" data-color="#fd7e14" style="background:#fd7e14"></span>
+              <span class="color-option" data-color="#dc3545" style="background:#dc3545"></span>
+              <span class="color-option" data-color="#6f42c1" style="background:#6f42c1"></span>
+              <span class="color-option" data-color="#ffffff" style="background:#ffffff; border:1px solid #ccc"></span>
+            </div>
+          </li>
+          <li><button id="toggleThemeBtn">🌙 Tema Escuro</button></li>
+          <li><button id="shareBtn">📤 Compartilhar App</button></li>
+          <li><button id="aboutBtn">ℹ️ Sobre o App</button></li>
+        </ul>
+        <button class="close-modal">Fechar</button>
+      </div>
     </div>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then((registration) => {
-                        console.log('Service Worker registrado:', registration);
-                    })
-                    .catch((error) => {
-                        console.error('Falha ao registrar Service Worker:', error);
-                    });
-            });
-        }
-    </script>
-    <script src="script.js"></script>
+
+    <!-- Modal Sobre -->
+    <div id="aboutModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h2>Sobre o App Listou!</h2>
+        <p><strong>Lista de Compras</strong> é um aplicativo criado para facilitar sua organização na hora de fazer compras. Com ele, você pode montar listas personalizadas, adicionar preço e quantidade aos produtos e acompanhar seus gastos.</p>
+        
+        <h3>Funcionalidades:</h3>
+        <ul>
+          <li>✅ Criar listas de compras com itens marcáveis</li>
+          <li>✅ Adicionar preço e quantidade</li>
+          <li>✅ Cálculo automático do total</li>
+          <li>✅ Histórico com datas</li>
+          <li>✅ Gráficos mensais e semanais</li>
+          <li>✅ Interface personalizável (temas e cores)</li>
+          <li>✅ Funciona offline (PWA)</li>
+        </ul>
+
+        <h3>Tecnologia:</h3>
+        <p>Este aplicativo foi desenvolvido com tecnologias web (HTML, CSS, JavaScript) e utiliza armazenamento local, garantindo privacidade ao usuário.</p>
+
+        <h3>Créditos:</h3>
+        <p>Desenvolvido por <strong>Gabriel Oliveira dos Santos</strong>, com o apoio do ChatGPT na geração de ideias, interface e funcionalidades.</p>
+
+        <p><strong>Versão 1.0</strong> — Última atualização: Junho/2025</p>
+
+        <button class="close-modal">Fechar</button>
+      </div>
+    </div>
+
+    <section class="messages">
+      <div id="message" style="display: none;"></div>
+    </section>
+
+    <footer>
+      <p>&copy; 2025 Lista de Compras Moderna</p>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="./lib/chart.min.js"></script>
+  <script src="script.js"></script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(registration => {
+            console.log('ServiceWorker registrado com sucesso:', registration.scope);
+          })
+          .catch(error => {
+            console.error('Falha ao registrar ServiceWorker:', error);
+          });
+      });
+    }
+  </script>
 </body>
 </html>

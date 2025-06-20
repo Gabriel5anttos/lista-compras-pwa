@@ -1,19 +1,21 @@
 {
-  "name": "Lista de Compras PWA",
-  "short_name": "Lista Compras",
+  "name": "Listou!",
+  "short_name": "Listou",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#f4f4f4",
+  "background_color": "#ffffff",
   "theme_color": "#007bff",
+  "description": "Lista de compras com gráficos e histórico",
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "icon-152.png",
-      "sizes": "152x152",
+      "src": "icon-512.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
